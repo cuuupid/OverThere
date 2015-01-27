@@ -145,21 +145,18 @@ function rankBy(rank, open){
   ajax({url: url, type: 'json'},
   function(json) {
       // Convert temperature
-    var locList = [
-      {
-        title:""
-      }
-    ];
+    var locList = [];
     var index =0;
-    for(var loc in json.results){
+    for(var i=0; i<json.results.length; i++){
       locList.unshift({title:"x",subtitle:"x"}); console.log(locList[index].title);
       index++;
     }
-    for(var x in locList){
-      locList[x.itemIndex].title=json.results[x.itemIndex].name;
-      console.log(locList[x.itemIndex].title);
+    for(var i = 0; i<locList.length; i++){
+      locList[i].title=json.results[i].name;
+      locList[i].subtitle=json.results[i].vincinity;
+      console.log(locList[i].title + " " + locList[i].subtitle);
+      index++;
     }
-    locList.reverse();
     console.log(locList[0] + " " + locList[1]);
     var resultsJson = new UI.Menu({
       sections: [{
