@@ -8,6 +8,8 @@ var UI = require('ui'); //sets up UI for usage
 var ajax = require("ajax");
 var lat = 0;
 var long = 0; 
+var locList = [];
+var errorHandler;
 var main = new UI.Card({
   title: 'OverThere',
   subtitle: 'Downloading nearby locations...',
@@ -15,8 +17,12 @@ var main = new UI.Card({
 }); //card for graphics and UI for downloader
 main.show();
 var cat = "";
-
+var resultsJson;
 var categories = [
+  {
+    title:"Reset",
+    subtitle:"If the app has stopped working"
+  },
   {
     title: "ATM",
     subtitle: "atm"
@@ -113,12 +119,28 @@ function addToUrl(x){
   console.log('URL is now: ' + url); //log for debugger
 }
 
+var errorPage = new UI.Card(
+{
+  title: "Error" + errorHandler,
+  subtitle:"There was an error processing your request.",
+  body:"Please try again. If the problem persists please contact us at hellopriansh@gmail.com with the error # in the subject."
+});
+
 function setLatLong(pos){
   lat = pos.coords.latitude;
   console.log('Lat:' + pos.coords.latitude);
   long = pos.coords.longitude;
   addToUrl("location=" + lat + "," + long+"");
-  rankBy("distance", true);
+  if(lat !== null && long!==null && lat!== undefined && long!==undefined)
+  {  rankBy("distance", true); errorPage.hide();}
+  else{
+    navigator.geolocation.getCurrentPosition(setLatLong, locationError, locationOptions);
+    errorHandler = 555;
+    errorPage.show();
+    errorPage.title="Error 555";
+    errorPage.hide();
+    errorPage.show();
+  }
 } //sets up lat and long, logs lat for debugging
 
 function locationError(err) {
@@ -127,13 +149,23 @@ function locationError(err) {
 
 console.log("got before selection candidate");//CAT HANDLER
 
+  function resetApp(){
+    url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8";
+    catList.show();
+    console.log("reset");
+}
+
 catList.on('select', function(event) {
   console.log("Selected item");
+  if(categories[event.itemIndex].title=="Reset"){
+    resetApp();
+  }
+  else{
      cat=categories[event.itemIndex].subtitle;
   console.log(cat);
     console.log(categories[event.itemIndex].subtitle);
   navigator.geolocation.getCurrentPosition(setLatLong, locationError, locationOptions); //async func to get lat/long coords
-console.log("began nav");
+    console.log("began nav");}
 });
 
 console.log("SKIPPED OVER?!");
@@ -145,31 +177,46 @@ function rankBy(rank, open){
   ajax({url: url, type: 'json'},
   function(json) {
       // Convert temperature
-    var locList = [];
+locList=[];
     var index =0;
     for(var i=0; i<json.results.length; i++){
       locList.unshift({title:"x",subtitle:"x"}); console.log(locList[index].title);
       index++;
     }
-    for(var i = 0; i<locList.length; i++){
-      locList[i].title=json.results[i].name;
-      locList[i].subtitle=json.results[i].vincinity;
-      console.log(locList[i].title + " " + locList[i].subtitle);
+    for(var j = 0; j<locList.length; j++){
+      locList[j].title=json.results[j].name;
+      locList[j].subtitle=json.results[j].vicinity;
+      console.log(locList[j].title + " " + locList[j].subtitle);
       index++;
     }
+    locList.unshift({title:"Reset", subtitle:"If the results are blatantly wrong"});
     console.log(locList[0] + " " + locList[1]);
-    var resultsJson = new UI.Menu({
+    resultsJson = new UI.Menu({
       sections: [{
       title:'Results',
       items: locList
       }]
     });
 resultsJson.show();
+    
+resultsJson.on('select', function(event) {
+  if(locList[event.itemIndex].title=="Reset"){
+    resetApp();
+    console.log("reset");
+  }
+  console.log("RESULTS CLICK HANDLER ON");
+});
   },
   function(error) {
     console.log('Ajax failed: ' + error);
   }
 );
+  
 
+  
+
+  
+  
 console.log("almost to the end");
 }
+
