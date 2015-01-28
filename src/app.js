@@ -5,19 +5,19 @@
 */
 
 var UI = require('ui'); //sets up UI for usage
-var ajax = require("ajax");
-var lat = 0;
-var long = 0; 
-var locList = [];
-var errorHandler;
+var ajax = require("ajax"); //ajax for communication
+var lat = 0; //latitude
+var long = 0;  //longitude
+var locList = []; //list of locations
+var errorHandler; //errorCode log num
 var main = new UI.Card({
   title: 'OverThere',
   subtitle: 'Downloading nearby locations...',
   body: 'The first iteration of this assembly only supports nearby restaurants.'
 }); //card for graphics and UI for downloader
 main.show();
-var cat = "";
-var resultsJson;
+var cat = ""; //category
+var resultsJson; //results list
 var categories = [
   {
     title:"Reset",
@@ -95,36 +95,37 @@ var categories = [
     title:"Schools",
     subtitle:"school"
   }
-];
+]; //NOTE THIS SHOULD GO IN A SERVER NOW.
 
 var catList = new UI.Menu({
   sections: [{
     title: 'Choose a category:',
     items: categories
   }]
-});
+}); //list of categories
 
 catList.show();
 main.hide();
-catList.show();
-var url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8";
+catList.show(); //show categories
+var url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8"; //url
 
 var locationOptions = {
   enableHighAccuracy: true, 
   maximumAge: 10000, 
   timeout: 0
-};
+}; //location configuration settings
+
 function addToUrl(x){
   url+="&&" + x; //add x and format for api
   console.log('URL is now: ' + url); //log for debugger
-}
+} //add a param
 
 var errorPage = new UI.Card(
 {
   title: "Error" + errorHandler,
   subtitle:"There was an error processing your request.",
   body:"Please try again. If the problem persists please contact us at hellopriansh@gmail.com with the error # in the subject."
-});
+}); //error handling 
 
 function setLatLong(pos){
   lat = pos.coords.latitude;
@@ -140,20 +141,20 @@ function setLatLong(pos){
     errorPage.title="Error 555";
     errorPage.hide();
     errorPage.show();
-  }
+  } //handle error
 } //sets up lat and long, logs lat for debugging
 
 function locationError(err) {
   console.log('location error (' + err.code + '): ' + err.message);
 }//handles errors 
 
-console.log("got before selection candidate");//CAT HANDLER
+console.log("got before selection candidate");//CAT HANDLER debug thing
 
-  function resetApp(){
+function resetApp(){
     url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8";
     catList.show();
     console.log("reset");
-}
+} //reset
 
 catList.on('select', function(event) {
   console.log("Selected item");
@@ -166,7 +167,7 @@ catList.on('select', function(event) {
     console.log(categories[event.itemIndex].subtitle);
   navigator.geolocation.getCurrentPosition(setLatLong, locationError, locationOptions); //async func to get lat/long coords
     console.log("began nav");}
-});
+}); //when selecting a category, either reset or set category
 
 console.log("SKIPPED OVER?!");
 function rankBy(rank, open){
@@ -212,11 +213,11 @@ resultsJson.on('select', function(event) {
   }
 );
   
-
+//the above basically makes arrays of Json datas and then gets the data and sets the data and displays it too
   
-
+//needs damn cleaning and spilliting into multiple files but meh 
   
   
-console.log("almost to the end");
+console.log("almost to the end"); //morre debug shit for async qualitative timing 
 }
 
