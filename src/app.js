@@ -112,7 +112,7 @@ var url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIza
 var locationOptions = {
   enableHighAccuracy: true, 
   maximumAge: 10000, 
-  timeout: 0
+  timeout: 10000
 }; //location configuration settings
 
 function addToUrl(x){
