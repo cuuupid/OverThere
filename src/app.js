@@ -4,6 +4,37 @@
 * Written by Priansh Shah, Andrew Jones, and Lucas Ochoa for the Connected Challenge Hack A Team online hackathon
 */
 
+/*
+
+TIME REMAINING: ~2 Weeks
+
+Task List (prioritized): (mark which ones you are on currently with your Initials in brackets)
+
+1. Cards to display info about locations (see places api from google and json return from logged urls)
+
+2. Maps API to display a map [PS]
+
+3. Consistent fetching of location data (every 5 seconds)
+
+4. Directions shown in a list to a location
+
+5. Option to favorite location
+
+6. Clickable menu, with the option to see more info, display map (auto updating), show directions, or favorite a location
+
+7. Add a "favorites" option to category list to show favorites
+
+8. Split code into multiple files
+
+9. Target audience and client base expansion
+
+10. Prepare a portfolio for final submission in two weeks
+
+*/
+
+
+
+
 var UI = require('ui'); //sets up UI for usage
 var ajax = require("ajax"); //ajax for communication
 /* These are the require statements that let us use these */
@@ -237,6 +268,7 @@ function resetApp(){
 //this resets categories :D working on a back button function for this
 
 catList.on('select', function(event) { //middle button press on an item, take event which is an object at that location of item
+  resetApp();
   console.log("Selected item");
   if(categories[event.itemIndex].title=="Reset"){
     resetApp();
