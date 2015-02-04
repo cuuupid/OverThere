@@ -10,25 +10,27 @@ TIME REMAINING: ~2 Weeks
 
 Task List (prioritized): (mark which ones you are on currently with your Initials in brackets)
 
-1. Cards to display info about locations (see places api from google and json return from logged urls)
+1. Cards to display info about locations (see places api from google and json return from logged urls) [PS] {will be done by 2/1}
 
-2. Maps API to display a map [PS]
+2. Maps API to display a map [PS] {hopefully done by 2/2}
 
-3. Consistent fetching of location data (every 5 seconds)
+3. Consistent fetching of location data (every 5 seconds) {hopefully done by 2/2}
 
-4. Directions shown in a list to a location
+4. Directions shown in a list to a location {hopefully done by 2/7}
 
-5. Option to favorite location
+5. Option to favorite location {hopefully done by 2/8}
 
-6. Clickable menu, with the option to see more info, display map (auto updating), show directions, or favorite a location
+6. Clickable menu, with the option to see more info, display map (auto updating), show directions, or favorite a location {hopefully done by 2/8}
 
-7. Add a "favorites" option to category list to show favorites
+7. Add a "favorites" option to category list to show favorites {hopefully done by 2/8}
 
-8. Split code into multiple files
+8. Split code into multiple files {hopefully done by deadline}
 
-9. Target audience and client base expansion
+9. Target audience and client base expansion {can be done after deadline}
 
-10. Prepare a portfolio for final submission in two weeks
+10. Prepare a portfolio for final submission in two weeks {done by 2/14 at latest}
+
+11. Call A Cab feature!!! (allows us to compete with yelp) {hopefully done by 2/14}
 
 */
 
@@ -47,7 +49,11 @@ var locList = [];
 //it's an array that will work like an array of arrays
 //this is because each index is {title:x, subtitle:y}
 //so it is an array of arrays; the arrays inside are really formatted menu items; so locList can be turned into a menu really easily
-
+var resultHandler = [
+  {
+    title:"An error has occurred"
+  }
+]
 
 var errorHandler; //errorCode log num
 //this is not really used too often
@@ -235,16 +241,20 @@ function setLatLong(pos){
   long = pos.coords.longitude;
   addToUrl("location=" + lat + "," + long+"");
   if(lat !== null && long!==null && lat!== undefined && long!==undefined)
-  {  rankBy("distance", true); errorPage.hide();}
-  else{
+  {  rankBy("distance", true); errorPage.hide(); }
+  
+  else
+  {
     navigator.geolocation.getCurrentPosition(setLatLong, locationError, locationOptions);
     errorHandler = 555;
     errorPage.show();
     errorPage.title="Error 555";
     errorPage.hide();
     errorPage.show();
-  } //handle error if it failed
-} //sets up lat and long, logs lat for debugging
+  } 
+  //handle error if it failed
+} 
+//sets up lat and long, logs lat for debugging
 //this is a function callback that occurs when the asynchronous function of geolocation api is called
 //it occurs asynchronously so to solve issues and remove need for callback I just put the thread in here
 //this'll be executed with the parameter pos, an object given by the geoloc api
@@ -339,7 +349,36 @@ resultsJson.on('select', function(event) {
   //
   //
   //
-  console.log("RESULTS CLICK HANDLER ON");
+  resultHandler[0].title = "Coming Soon";  
+  resultHandler.unshift({title:"Transportation"});
+  resultHandler.unshift({title:"Directions"});
+  resultHandler.unshift({title:"Map"});
+  resultHandler.unshift({title:"Information"});
+
+  var resultInfo = new UI.Menu({
+      sections: [{
+      title:locList[event.itemIndex].title,
+      items: resultHandler
+      }]
+    });
+  resultsJson.hide(); resultInfo.show();
+  resultInfo.on('select', function(event){
+    
+    if(resultHandler[event.itemIndex].title=="Information"){
+      console.log("Information was clicked");
+      var information = new UI.Card(
+      {
+        title: resultInfo[0].title,
+        subtitle:"",
+        body:"Please try again. If the problem persists please contact us at hellopriansh@gmail.com with the error # in the subject."
+      });
+    }
+    
+  });
+  
+  
+    console.log("RESULTS CLICK HANDLER ON");
+  
 });
   },
   function(error) {
