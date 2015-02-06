@@ -301,7 +301,11 @@ function rankBy(rank, open){ //takes rank and whether or not the shop should be 
   if(open){
     addToUrl("opennow");}
   
-  ajax({url: url, type: 'json'},
+  ajax
+  (
+    {
+      url: "" + url + "", type: 'json'
+    },
        //request json
   function(json) {
     //when get json
@@ -354,10 +358,11 @@ resultsJson.on('select', function(event) {
   resultHandler.unshift({title:"Directions"});
   resultHandler.unshift({title:"Map"});
   resultHandler.unshift({title:"Information"});
-
+  var placeTitle=locList[event.itemIndex].title;
+  var placeSubtitle=locList[event.itemIndex].subtitle;
   var resultInfo = new UI.Menu({
       sections: [{
-      title:locList[event.itemIndex].title,
+      title:placeTitle,
       items: resultHandler
       }]
     });
@@ -368,10 +373,11 @@ resultsJson.on('select', function(event) {
       console.log("Information was clicked");
       var information = new UI.Card(
       {
-        title: resultInfo[0].title,
+        title: placeTitle,
         subtitle:"",
-        body:"Please try again. If the problem persists please contact us at hellopriansh@gmail.com with the error # in the subject."
+        body:placeSubtitle
       });
+      information.show();
     }
     
   });
