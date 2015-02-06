@@ -53,7 +53,7 @@ var resultHandler = [
   {
     title:"An error has occurred"
   }
-]
+];
 
 var errorHandler; //errorCode log num
 //this is not really used too often
@@ -297,7 +297,7 @@ console.log("SKIPPED OVER?!");
 
 function rankBy(rank, open){ //takes rank and whether or not the shop should be open rn
   addToUrl("rankby=" + rank); //rank by 
-  addToUrl("type=" + cat); //type of cat
+  addToUrl("types=" + cat); //type of cat
   if(open){
     addToUrl("opennow");}
   
