@@ -1,7 +1,8 @@
 {
     "appKeys": {},
     "capabilities": [
-        "location"
+        "location",
+        "configurable"
     ],
     "companyName": "hellopriansh@gmail.com",
     "longName": "OverThere 0.8.9.3:Nightly Build",
@@ -10,7 +11,6 @@
         "media": [
             {
                 "file": "images/menu_icon.png",
-                "menuIcon": true,
                 "name": "IMAGE_MENU_ICON",
                 "type": "png"
             },
@@ -31,6 +31,7 @@
             },
             {
                 "file": "images/logo.png",
+                "menuIcon": true,
                 "name": "IMAGES_LOGO_PNG",
                 "type": "png"
             }
@@ -39,7 +40,7 @@
     "shortName": "OverThere",
     "uuid": "0062b8dc-9f68-49c0-9432-15b0173cec6b",
     "versionCode": 1,
-    "versionLabel": "0.29",
+    "versionLabel": "0.3",
     "watchapp": {
         "watchface": false
     }

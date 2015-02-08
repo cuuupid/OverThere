@@ -10,27 +10,22 @@ TIME REMAINING: ~2 Weeks
 
 Task List (prioritized): (mark which ones you are on currently with your Initials in brackets)
 
-1. Cards to display info about locations (see places api from google and json return from logged urls) [PS] {will be done by 2/1}
+1. Places Descriptions, different API {LUCAS PLEASE DO THIS}
 
-2. Maps API to display a map [PS] {hopefully done by 2/2}
+2. Maps API to display a map [ANDREW] {hopefully done by 2/9}
 
-3. Consistent fetching of location data (every 5 seconds) {hopefully done by 2/2}
+4. Directions shown in a list to a location {hopefully done by 2/8}
 
-4. Directions shown in a list to a location {hopefully done by 2/7}
+5. Option to favorite location {hopefully done by 2/10} {PRIANSH IS WORKING ON THIS}
 
-5. Option to favorite location {hopefully done by 2/8}
+10. Prepare a portfolio for final submission in two weeks {done by 2/14 at latest} {DAVID}
 
-6. Clickable menu, with the option to see more info, display map (auto updating), show directions, or favorite a location {hopefully done by 2/8}
-
-7. Add a "favorites" option to category list to show favorites {hopefully done by 2/8}
+11. Call A Cab feature!!! (allows us to compete with yelp) {hopefully done by 2/14}
+<ROYALTY FROM UBER>
 
 8. Split code into multiple files {hopefully done by deadline}
 
 9. Target audience and client base expansion {can be done after deadline}
-
-10. Prepare a portfolio for final submission in two weeks {done by 2/14 at latest}
-
-11. Call A Cab feature!!! (allows us to compete with yelp) {hopefully done by 2/14}
 
 */
 
@@ -39,7 +34,11 @@ Task List (prioritized): (mark which ones you are on currently with your Initial
 
 var UI = require('ui'); //sets up UI for usage
 var ajax = require("ajax"); //ajax for communication
-/* These are the require statements that let us use these */
+var Settings = require("settings");
+// these are the require statements that let us use these
+
+/* THIS IS FOR US TO RESET FAVORITES */
+//Settings.data('favorites',null);
 
 var lat = 0; //latitude
 var long = 0;  //longitude
@@ -49,11 +48,7 @@ var locList = [];
 //it's an array that will work like an array of arrays
 //this is because each index is {title:x, subtitle:y}
 //so it is an array of arrays; the arrays inside are really formatted menu items; so locList can be turned into a menu really easily
-var resultHandler = [
-  {
-    title:"An error has occurred"
-  }
-];
+
 
 var errorHandler; //errorCode log num
 //this is not really used too often
@@ -89,6 +84,9 @@ var categories = [
   {
     title:"Reset",
     subtitle:"If the app has stopped working"
+  },
+  {
+    title:"Favorites"
   },
   {
     title: "ATM",
@@ -269,6 +267,33 @@ function locationError(err) {
 console.log("got before selection candidate");//CAT HANDLER debug thing
 
 
+function addToFavorites(x,y){
+  console.log("Adding to favorites, "+x);
+  var favList = JSON.parse(Settings.data('favorites'));
+  console.log("Parsed favorites to get " + JSON.stringify(favList));
+  favList.unshift({title:x,subtitle:y});
+  Settings.data('favorites',JSON.stringify(favList));
+}
+
+
+function makeFavorites(){
+      var favoritesMenu = new UI.Menu({
+  sections:[{
+    title:"Favorites",
+    items:JSON.parse(Settings.data('favorites'))
+  }  
+  ]
+}
+);
+  favoritesMenu.show();
+  favoritesMenu.on('select', function(e){
+    var descriptCard = new UI.Card({
+      title:(JSON.parse(Settings.data('favorites')))[e.itemIndex].title,
+      body:(JSON.parse(Settings.data('favorites')))[e.itemIndex].subtitle
+    });
+    descriptCard.show();
+  });
+}
 
 function resetApp(){
     url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8";
@@ -282,6 +307,19 @@ catList.on('select', function(event) { //middle button press on an item, take ev
   console.log("Selected item");
   if(categories[event.itemIndex].title=="Reset"){
     resetApp();
+  }
+  else if(categories[event.itemIndex].title=="Favorites"){
+     if(Settings.data('favorites')!==null && Settings.data('favorites')!==undefined && Settings.data('favorites')!="None"){
+      makeFavorites();
+    }
+    else{
+      var noFavorites = new UI.Card({
+        title:"Oops!",
+        subtitle:"No favorites",
+        body:"If you believe this is an error please contact the app developer."
+      });
+      noFavorites.show();
+    }
   }
   else{
      cat=categories[event.itemIndex].subtitle;
@@ -343,17 +381,24 @@ resultsJson.show();
     
     
 resultsJson.on('select', function(event) {
+  var resultHandler = [
+  {
+    title:"An error has occurred"
+  }
+];
   if(locList[event.itemIndex].title=="Reset"){
     resetApp();
     console.log("reset");
   }
+ 
   //
   //
   //  OUR CODE TO HANDLE MAPS GOES HERE!!!
   //
   //
   //
-  resultHandler[0].title = "Coming Soon";  
+  else{
+  resultHandler[0].title = "Favorite";  
   resultHandler.unshift({title:"Transportation"});
   resultHandler.unshift({title:"Directions"});
   resultHandler.unshift({title:"Map"});
@@ -380,9 +425,20 @@ resultsJson.on('select', function(event) {
       information.show();
     }
     
+    if(resultHandler[event.itemIndex].title=="Favorite"){
+      console.log("Favoriting location "+ placeTitle);
+      console.log(Settings.data('favorites'));
+      if(Settings.data('favorites')!==null && Settings.data('favorites')!==undefined && Settings.data('favorites')!="None"){
+        addToFavorites(placeTitle,placeSubtitle);
+         console.log(JSON.stringify(Settings.data('favorites')));
+      }
+      else{Settings.data('favorites', JSON.stringify([{title:placeTitle,subtitle:placeSubtitle}])); console.log(JSON.stringify(Settings.data('favorites')));}
+    }
+  
+    
   });
   
-  
+  }
     console.log("RESULTS CLICK HANDLER ON");
   
 });
