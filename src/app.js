@@ -10,7 +10,7 @@ TIME REMAINING: ~2 Weeks
 
 Task List (prioritized): (mark which ones you are on currently with your Initials in brackets)
 
-1. Places Descriptions, different API {LUCAS PLEASE DO THIS}
+1. add textual reviews option
 
 2. Maps API to display a map [ANDREW] {hopefully done by 2/9}
 
