@@ -16,12 +16,18 @@ Task List (prioritized): (mark which ones you are on currently with your Initial
 
 4. Directions shown in a list to a location {hopefully done by 2/8}
 
-5. Option to favorite location {hopefully done by 2/10} {PRIANSH IS WORKING ON THIS}
+
+
 
 10. Prepare a portfolio for final submission in two weeks {done by 2/14 at latest} {DAVID}
 
+
+
 11. Call A Cab feature!!! (allows us to compete with yelp) {hopefully done by 2/14}
 <ROYALTY FROM UBER>
+
+
+
 
 8. Split code into multiple files {hopefully done by deadline}
 
@@ -295,6 +301,78 @@ function makeFavorites(){
   });
 }
 
+function getRating(x,placeTitle,placeSubtitle){
+  var detailsUrl = "https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8&placeid=";
+  detailsUrl+=x;
+  console.log(detailsUrl);
+  ajax(
+  {
+    url:detailsUrl,
+    type: 'json'
+  },
+  function(data) {
+    console.log("THE RATING IS "+data.result.rating);
+    var rating = data.result.rating;  
+    if(rating === undefined || rating===null || rating<=0){
+        rating = getAverageRating(x,placeTitle,placeSubtitle);
+      }
+    else{
+      rating = rating.toFixed(2);
+      var information = new UI.Card(
+      {
+        title: placeTitle,
+        subtitle:rating+"/5",
+        body:placeSubtitle,
+        scrollable:true
+      });
+      console.log("info shown");
+      information.show();}
+  },
+  function(error) {
+    console.log('The ajax request failed: ' + error);
+  }
+);
+}
+
+function getAverageRating(x,placeTitle,placeSubtitle){
+  var detailsUrl = "https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8&placeid=";
+  detailsUrl+=x;
+  console.log(detailsUrl);
+  ajax(
+  {
+    url:detailsUrl,
+    type: 'json'
+  },
+  function(data) {
+    var sum = 0;
+    if(data.result.reviews !==undefined){
+    for(var i = 0;i<data.result.reviews.length;i++)
+      sum+=data.result.reviews[i].aspects[0].rating;
+    if(data.result.reviews.length>0){
+      sum /= data.result.reviews.length;
+    sum = sum.toFixed(2);
+      sum = "" + sum + "/5";
+    }
+   else{
+     sum = "No Rating";}}
+    else{sum = "No Rating";}
+    console.log("THE RATING AVERAGE IS "+sum);
+    var information = new UI.Card(
+      {
+        title: placeTitle,
+        subtitle:sum,
+        body:placeSubtitle,
+        scrollable:true
+      });
+      console.log("info shown");
+      information.show();
+  },
+  function(error) {
+    console.log('The ajax request failed: ' + error);
+  }
+);
+}
+
 function resetApp(){
     url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8";
     catList.show();
@@ -357,6 +435,7 @@ locList=[];
     for(var j = 0; j<locList.length; j++){
       locList[j].title=json.results[j].name;
       locList[j].subtitle=json.results[j].vicinity;
+      locList[j].value = json.results[j].place_id;
       console.log(locList[j].title + " " + locList[j].subtitle);
       index++;
     }
@@ -405,6 +484,8 @@ resultsJson.on('select', function(event) {
   resultHandler.unshift({title:"Information"});
   var placeTitle=locList[event.itemIndex].title;
   var placeSubtitle=locList[event.itemIndex].subtitle;
+    var place = locList[event.itemIndex].value;
+    console.log("THE PLACE ID IS "+place);
   var resultInfo = new UI.Menu({
       sections: [{
       title:placeTitle,
@@ -416,13 +497,8 @@ resultsJson.on('select', function(event) {
     
     if(resultHandler[event.itemIndex].title=="Information"){
       console.log("Information was clicked");
-      var information = new UI.Card(
-      {
-        title: placeTitle,
-        subtitle:"",
-        body:placeSubtitle
-      });
-      information.show();
+      getRating(place,placeTitle,placeSubtitle);
+    
     }
     
     if(resultHandler[event.itemIndex].title=="Favorite"){
