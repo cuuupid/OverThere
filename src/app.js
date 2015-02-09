@@ -45,7 +45,6 @@ var Settings = require("settings");
 
 /* THIS IS FOR US TO RESET FAVORITES */
 //Settings.data('favorites',null);
-
 var lat = 0; //latitude
 var long = 0;  //longitude
 
@@ -277,8 +276,16 @@ function addToFavorites(x,y){
   console.log("Adding to favorites, "+x);
   var favList = JSON.parse(Settings.data('favorites'));
   console.log("Parsed favorites to get " + JSON.stringify(favList));
-  favList.unshift({title:x,subtitle:y});
+  favList[0]={title:x,subtitle:y};
+  favList.unshift({title:"Clear"});
   Settings.data('favorites',JSON.stringify(favList));
+  var successFav = new UI.Card({
+    title:"Success",
+    subtitle:"Favorited",
+    body:"You have successfully favorited " + x,
+    scrollable:true
+  });
+  successFav.show();
 }
 
 
@@ -293,11 +300,16 @@ function makeFavorites(){
 );
   favoritesMenu.show();
   favoritesMenu.on('select', function(e){
+    if((JSON.parse(Settings.data('favorites')))[e.itemIndex].title == "Clear"){
+      Settings.data('favorites',null);
+      favoritesMenu.hide();
+    }
+    else{
     var descriptCard = new UI.Card({
       title:(JSON.parse(Settings.data('favorites')))[e.itemIndex].title,
       body:(JSON.parse(Settings.data('favorites')))[e.itemIndex].subtitle
     });
-    descriptCard.show();
+      descriptCard.show();}
   });
 }
 
@@ -508,7 +520,15 @@ resultsJson.on('select', function(event) {
         addToFavorites(placeTitle,placeSubtitle);
          console.log(JSON.stringify(Settings.data('favorites')));
       }
-      else{Settings.data('favorites', JSON.stringify([{title:placeTitle,subtitle:placeSubtitle}])); console.log(JSON.stringify(Settings.data('favorites')));}
+      else{
+        Settings.data('favorites', JSON.stringify([{title:"Clear"},{title:placeTitle,subtitle:placeSubtitle}])); console.log(JSON.stringify(Settings.data('favorites')));
+        var successFav = new UI.Card({
+        title:"Success",
+        subtitle:"Favorited",
+        body:"You have successfully favorited " +placeTitle,
+        scrollable:true
+        });
+        successFav.show();}
     }
   
     
@@ -531,6 +551,5 @@ resultsJson.on('select', function(event) {
 //working on it (y)  
   
 console.log("almost to the end"); //morre debug shit for async timing 
-
 }
 
