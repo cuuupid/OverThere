@@ -10,16 +10,24 @@ TIME REMAINING: ~2 Weeks
 
 Task List (prioritized): (mark which ones you are on currently with your Initials in brackets)
 
-1. add textual reviews option
+1. add textual reviews option [ps]
 
 2. Maps API to display a map [ANDREW] {hopefully done by 2/9}
+
+
+
+
+
 
 4. Directions shown in a list to a location {hopefully done by 2/8}
 
 
 
 
+
 10. Prepare a portfolio for final submission in two weeks {done by 2/14 at latest} {DAVID}
+
+
 
 
 
@@ -29,7 +37,9 @@ Task List (prioritized): (mark which ones you are on currently with your Initial
 
 
 
+
 8. Split code into multiple files {hopefully done by deadline}
+
 
 9. Target audience and client base expansion {can be done after deadline}
 
@@ -41,6 +51,7 @@ Task List (prioritized): (mark which ones you are on currently with your Initial
 var UI = require('ui'); //sets up UI for usage
 var ajax = require("ajax"); //ajax for communication
 var Settings = require("settings");
+//var uber = require("uber");
 // these are the require statements that let us use these
 
 /* THIS IS FOR US TO RESET FAVORITES */
@@ -384,6 +395,56 @@ function getAverageRating(x,placeTitle,placeSubtitle){
   }
 );
 }
+//Premium feature maybe? Charge luike $40 and log it
+function getReviews(x,placeTitle,placeSubtitle){
+  var reviewsUrl = "https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8&placeid=";
+  reviewsUrl+=x;
+  console.log(reviewsUrl);
+  ajax(
+  {
+    url:reviewsUrl,
+    type: 'json'
+  },
+  function(data) {
+    var reviewData = [];
+   
+    if(data.result.reviews !==undefined){
+    for(var i = 0;i<data.result.reviews.length;i++){
+      reviewData.unshift(data.result.reviews[i].text);
+      console.log(reviewData[i]);}
+    }
+    var processedReviews = [];
+    processedReviews.unshift({title:"No other reviews"});
+
+    for(var j = 0; j<reviewData.length; j++){
+      processedReviews.unshift({title:reviewData[j], subtitle:data.result.reviews[j].aspects[0].rating+"/5"});
+      console.log(reviewData[j]);
+      console.log(processedReviews[j].title);
+    }
+    var reviewsMenu = new UI.Menu({
+      sections:[{
+      title:"Reviews",
+      items:processedReviews
+      }]
+    });
+    reviewsMenu.show();
+    reviewsMenu.on('select', function(event){
+                   var review = reviewData[event.itemIndex];
+      console.log(review);
+      var subtitle = processedReviews[event.itemIndex].subtitle;
+      console.log(subtitle);
+                   var reviewCard = new UI.Card({
+                     title:subtitle,
+                     body:review
+                   });
+      reviewCard.show();
+                   });
+  },
+  function(error) {
+    console.log('The ajax request failed: ' + error);
+  }
+);
+}
 
 function resetApp(){
     url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8";
@@ -492,7 +553,7 @@ resultsJson.on('select', function(event) {
   resultHandler[0].title = "Favorite";  
   resultHandler.unshift({title:"Transportation"});
   resultHandler.unshift({title:"Directions"});
-  resultHandler.unshift({title:"Map"});
+  resultHandler.unshift({title:"Reviews"});
   resultHandler.unshift({title:"Information"});
   var placeTitle=locList[event.itemIndex].title;
   var placeSubtitle=locList[event.itemIndex].subtitle;
@@ -530,11 +591,40 @@ resultsJson.on('select', function(event) {
         });
         successFav.show();}
     }
-  
     
+    if(resultHandler[event.itemIndex].title=="Transportation"){
+      console.log("Cars clicked");
+      var uberUrl = "https://www.api.uber.com/v1/products?";
+      ajax(
+      {
+      url:uberUrl+"latitude="+lat+"&longitude="+long,
+      type: 'json',
+        headers:{
+          'Authorization':"Token serverLolMyServer"
+        },
+        async:false
+    },
+    function(data) {
+        var cars = [];
+        for(var i = 0; i<data.products.length;i++){
+          console.log(data.products[i].display_name);
+          cars.unshift(data.products[i].display_name);
+        }
+    },
+    function(error) {
+      console.log("AJAX Failed because of error: " + error);
+    });
+  }
+    if(resultHandler[event.itemIndex].title=="Reviews"){
+      console.log("Getting Reviews");
+      getReviews(place,placeTitle,placeSubtitle);
+    
+    }
   });
   
   }
+  
+  
     console.log("RESULTS CLICK HANDLER ON");
   
 });
@@ -550,6 +640,5 @@ resultsJson.on('select', function(event) {
 //needs damn cleaning and spilliting into multiple files but meh 
 //working on it (y)  
   
-console.log("almost to the end"); //morre debug shit for async timing 
+console.log("almost to the end"); //more debug shit for async timing 
 }
-
