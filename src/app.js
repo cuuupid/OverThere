@@ -435,7 +435,8 @@ function getReviews(x,placeTitle,placeSubtitle){
       console.log(subtitle);
                    var reviewCard = new UI.Card({
                      title:subtitle,
-                     body:review
+                     body:review,
+                     scrollable:true
                    });
       reviewCard.show();
                    });
