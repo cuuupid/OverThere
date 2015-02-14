@@ -5,7 +5,7 @@
         "configurable"
     ],
     "companyName": "hellopriansh@gmail.com",
-    "longName": "OverThere 0.8.9.3:Nightly Build",
+    "longName": "OverThere",
     "projectType": "pebblejs",
     "resources": {
         "media": [
@@ -40,7 +40,7 @@
     "shortName": "OverThere",
     "uuid": "0062b8dc-9f68-49c0-9432-15b0173cec6b",
     "versionCode": 1,
-    "versionLabel": "0.3",
+    "versionLabel": "0.14",
     "watchapp": {
         "watchface": false
     }

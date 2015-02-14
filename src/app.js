@@ -1,47 +1,25 @@
 /*
-* OverThere
-* Copyright Pending
-* Written by Priansh Shah, Andrew Jones, and Lucas Ochoa for the Connected Challenge Hack A Team online hackathon
+* OverThere (TM)
+* Copyright Priansh Shah and Andrew Jones
 */
 
 /*
 
-TIME REMAINING: ~2 Weeks
+TIme Spent: (ADD TO THIS)
+Set Team:
+Priansh: 53 hours, Dev
+Andrew: 37 hours, Dev + Doc
+David: 19 hours, Doc + Test
 
-Task List (prioritized): (mark which ones you are on currently with your Initials in brackets)
+Undecided:
+Jake: 4 hours, Dev + Marketing
+Lucas:  hours, Dev
+Ben: 5 hours,  Test (+ ~Dev)
 
-1. add textual reviews option [ps]
-
-2. Maps API to display a map [ANDREW] {hopefully done by 2/9}
-
-
-
-
-
-
-4. Directions shown in a list to a location {hopefully done by 2/8}
-
-
-
-
-
-10. Prepare a portfolio for final submission in two weeks {done by 2/14 at latest} {DAVID}
-
-
-
-
-
-11. Call A Cab feature!!! (allows us to compete with yelp) {hopefully done by 2/14}
-<ROYALTY FROM UBER>
-
-
-
-
-
-8. Split code into multiple files {hopefully done by deadline}
-
-
-9. Target audience and client base expansion {can be done after deadline}
+TIME REMAINING: around 12 hours
+Task List:
+1. Directions shown in a list to a location {hopefully done by 2/14}{PS}{LO}
+2. Prepare a portfolio for final submission {2/14 at latest} {DM}{AJ}
 
 */
 
@@ -405,41 +383,52 @@ function getReviews(x,placeTitle,placeSubtitle){
     url:reviewsUrl,
     type: 'json'
   },
-  function(data) {
-    var reviewData = [];
-   
-    if(data.result.reviews !==undefined){
-    for(var i = 0;i<data.result.reviews.length;i++){
-      reviewData.unshift(data.result.reviews[i].text);
-      console.log(reviewData[i]);}
-    }
-    var processedReviews = [];
-    processedReviews.unshift({title:"No other reviews"});
+    function(data) {
+		var reviewData = [];
+		var tempReview = "";
+		if (data.result.reviews !== undefined) {
+			for (var i = 0; i < data.result.reviews.length; i++) {
+				tempReview = data.result.reviews[i].text;
+				if (tempReview.length >= 1003) {
+					tempReview = tempReview.substring(0, 1001) + "...";
+				}
+				reviewData.unshift(tempReview);
+				console.log(reviewData[i]);
+			}
+		}
+		var processedReviews = [];
+		processedReviews.unshift({
+			title : "No other reviews"
+		});
 
-    for(var j = 0; j<reviewData.length; j++){
-      processedReviews.unshift({title:reviewData[j], subtitle:data.result.reviews[j].aspects[0].rating+"/5"});
-      console.log(reviewData[j]);
-      console.log(processedReviews[j].title);
-    }
-    var reviewsMenu = new UI.Menu({
-      sections:[{
-      title:"Reviews",
-      items:processedReviews
-      }]
-    });
-    reviewsMenu.show();
-    reviewsMenu.on('select', function(event){
-                   var review = reviewData[event.itemIndex];
-      console.log(review);
-      var subtitle = processedReviews[event.itemIndex].subtitle;
-      console.log(subtitle);
-                   var reviewCard = new UI.Card({
-                     title:subtitle,
-                     body:review,
-                     scrollable:true
-                   });
-      reviewCard.show();
-                   });
+		for (var j = 0; j < reviewData.length; j++) {
+			processedReviews.unshift({
+				title : reviewData[j],
+				subtitle : data.result.reviews[j].aspects[0].rating + "/5"
+			});
+			console.log(reviewData[j]);
+			console.log(processedReviews[j].title);
+		}
+		var reviewsMenu = new UI.Menu({
+				sections : [{
+						title : "Reviews",
+						items : processedReviews
+					}
+				]
+			});
+		reviewsMenu.show();
+		reviewsMenu.on('select', function (event) {
+			var review = reviewData[reviewData.length -1- event.itemIndex];
+			console.log(review);
+			var subtitle = processedReviews[processedReviews.length -2 - event.itemIndex].subtitle;
+			console.log(subtitle);
+			var reviewCard = new UI.Card({
+					title : subtitle,
+					body : review,
+					scrollable : true
+				});
+			reviewCard.show();
+		});
   },
   function(error) {
     console.log('The ajax request failed: ' + error);
