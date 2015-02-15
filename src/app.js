@@ -558,6 +558,37 @@ resultsJson.on('select', function(event) {
   resultsJson.hide(); resultInfo.show();
   resultInfo.on('select', function(event){
     
+    if(resultHandler[event.itemIndex].title=="Directions")
+    {
+      var directionUrl = "https://maps.google.com/maps/api/directions/output?key=AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8";
+      directionUrl+="&origin="+lat+","+long+"&destination="+placeSubtitle;
+      ajax(
+      {
+        url: directionUrl,
+        type:'json'
+      },
+        function(data){
+          var directionList = [];
+          console.log(directionUrl);
+          for(var j = data.steps.length-1; j>=0; j--){
+            directionList.unshift({title:data.steps[j].html_instructions});
+            console.log(data.steps[j].html_instructions);
+          }
+          var directions = UI.Menu({
+            sections:[
+            {
+            title:"Directions",
+            items:directionList
+            }
+            ]});
+          directions.show();
+        }
+      );
+    }
+      
+   
+    
+    
     if(resultHandler[event.itemIndex].title=="Information"){
       console.log("Information was clicked");
       getRating(place,placeTitle,placeSubtitle);
@@ -624,7 +655,7 @@ resultsJson.on('select', function(event) {
   }
 );
   //when clicked or on error
-  
+  //AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8
 //the above basically makes arrays of Json datas and then gets the data and sets the data and displays it too
   
 //needs damn cleaning and spilliting into multiple files but meh 
