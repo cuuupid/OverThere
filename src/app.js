@@ -541,7 +541,6 @@ resultsJson.on('select', function(event) {
   //
   else{
   resultHandler[0].title = "Favorite";  
-  resultHandler.unshift({title:"Transportation"});
   resultHandler.unshift({title:"Directions"});
   resultHandler.unshift({title:"Reviews"});
   resultHandler.unshift({title:"Information"});
@@ -560,8 +559,10 @@ resultsJson.on('select', function(event) {
     
     if(resultHandler[event.itemIndex].title=="Directions")
     {
-      var directionUrl = "https://maps.google.com/maps/api/directions/output?key=AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8";
-      directionUrl+="&origin="+lat+","+long+"&destination="+placeSubtitle;
+      console.log("Directing");
+      var directionUrl = "https://maps.googleapis.com/maps/api/directions/json?key=AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8";
+      directionUrl+="&origin="+lat+","+long+"&destination=\""+placeSubtitle+"\"";
+      console.log(directionUrl);
       ajax(
       {
         url: directionUrl,
@@ -570,11 +571,19 @@ resultsJson.on('select', function(event) {
         function(data){
           var directionList = [];
           console.log(directionUrl);
-          for(var j = data.steps.length-1; j>=0; j--){
-            directionList.unshift({title:data.steps[j].html_instructions});
-            console.log(data.steps[j].html_instructions);
+          var dir;
+          for(var j = data.routes[0].legs[0].steps.length-1; j>=0; j--){
+            dir = data.routes[0].legs[0].steps[j].html_instructions;
+            dir = dir.replace(/<(?:.|\n)*?>/gm, '');
+dir=dir.replace(/<br>/gi, "\n");
+dir=dir.replace(/<p.*>/gi, "\n");
+dir=dir.replace(/<a.*href="(.*?)".*>(.*?)<\/a>/gi, " $2 (Link->$1) ");
+dir=dir.replace(/<(?:.|\s)*?>/g, "");
+            directionList.unshift({title:dir});
+            console.log(data.routes[0].legs[0].steps[j].html_instructions);
           }
-          var directions = UI.Menu({
+          console.log("Done making array of directions");
+          var directions = new UI.Menu({
             sections:[
             {
             title:"Directions",
@@ -582,6 +591,16 @@ resultsJson.on('select', function(event) {
             }
             ]});
           directions.show();
+          directions.on('select',function(event){
+            var directionDesc = new UI.Card({
+              body:directionList[event.itemIndex].title,
+              scrollable:true
+            });
+            directionDesc.show();
+          });
+        },
+        function(error){
+          console.log(error);
         }
       );
     }
