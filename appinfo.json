@@ -1,8 +1,7 @@
 {
     "appKeys": {},
     "capabilities": [
-        "location",
-        "configurable"
+        "location"
     ],
     "companyName": "hellopriansh@gmail.com",
     "longName": "OverThere",
@@ -34,13 +33,18 @@
                 "menuIcon": true,
                 "name": "IMAGES_LOGO_PNG",
                 "type": "png"
+            },
+            {
+                "file": "images/logo2.png",
+                "name": "IMAGES_LOGO2_PNG",
+                "type": "png"
             }
         ]
     },
     "shortName": "OverThere",
     "uuid": "0062b8dc-9f68-49c0-9432-15b0173cec6b",
     "versionCode": 1,
-    "versionLabel": "0.14",
+    "versionLabel": "1.1",
     "watchapp": {
         "watchface": false
     }

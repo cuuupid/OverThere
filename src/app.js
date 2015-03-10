@@ -3,29 +3,6 @@
 * Copyright Priansh Shah and Andrew Jones
 */
 
-/*
-
-TIme Spent: (ADD TO THIS)
-Set Team:
-Priansh: 53 hours, Dev
-Andrew: 37 hours, Dev + Doc
-David: 19 hours, Doc + Test
-
-Undecided:
-Jake: 4 hours, Dev + Marketing
-Lucas:  hours, Dev
-Ben: 5 hours,  Test (+ ~Dev)
-
-TIME REMAINING: around 12 hours
-Task List:
-1. Directions shown in a list to a location {hopefully done by 2/14}{PS}{LO}
-2. Prepare a portfolio for final submission {2/14 at latest} {DM}{AJ}
-
-*/
-
-
-
-
 var UI = require('ui'); //sets up UI for usage
 var ajax = require("ajax"); //ajax for communication
 var Settings = require("settings");
@@ -632,7 +609,7 @@ dir=dir.replace(/<(?:.|\s)*?>/g, "");
         successFav.show();}
     }
     
-    if(resultHandler[event.itemIndex].title=="Transportation"){
+ /*   if(resultHandler[event.itemIndex].title=="Transportation"){
       console.log("Cars clicked");
       var uberUrl = "https://www.api.uber.com/v1/products?";
       ajax(
@@ -654,7 +631,7 @@ dir=dir.replace(/<(?:.|\s)*?>/g, "");
     function(error) {
       console.log("AJAX Failed because of error: " + error);
     });
-  }
+  }*/
     if(resultHandler[event.itemIndex].title=="Reviews"){
       console.log("Getting Reviews");
       getReviews(place,placeTitle,placeSubtitle);
