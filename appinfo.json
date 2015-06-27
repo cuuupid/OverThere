@@ -1,7 +1,8 @@
 {
     "appKeys": {},
     "capabilities": [
-        "location"
+        "location",
+        "configurable"
     ],
     "companyName": "hellopriansh@gmail.com",
     "longName": "OverThere",
@@ -29,18 +30,24 @@
                 "type": "font"
             },
             {
-                "file": "images/logo.png",
+                "file": "images/overtherelogo.png",
                 "menuIcon": true,
-                "name": "IMAGES_LOGO_PNG",
+                "name": "IMAGES_OVERTHERELOGO_PNG",
                 "type": "png"
             },
             {
                 "file": "images/logo2.png",
                 "name": "IMAGES_LOGO2_PNG",
                 "type": "png"
+            },
+            {
+                "file": "images/logo.png",
+                "name": "IMAGES_LOGO_PNG",
+                "type": "png"
             }
         ]
     },
+    "sdkVersion": "3",
     "shortName": "OverThere",
     "uuid": "0062b8dc-9f68-49c0-9432-15b0173cec6b",
     "versionCode": 1,

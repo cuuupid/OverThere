@@ -1,11 +1,18 @@
 /*
-* OverThere (TM)
-* Copyright Priansh Shah and Andrew Jones
+* OverThere
+* Copyright Priansh Shah
 */
 
 var UI = require('ui'); //sets up UI for usage
 var ajax = require("ajax"); //ajax for communication
 var Settings = require("settings");
+var Accel = require("ui/accel");
+Accel.init();
+
+
+
+var destination;
+
 //var uber = require("uber");
 // these are the require statements that let us use these
 
@@ -58,6 +65,9 @@ var categories = [
   },
   {
     title:"Favorites"
+  },
+  {
+    title:"Find Friends",
   },
   {
     title: "ATM",
@@ -133,8 +143,6 @@ var categories = [
   }
 ];
 //this is like locList, it's basically a menu of categories but it's an array rn
-//same syntax; @priansh will be moving this to a json or another file soon (SOOON)
-
 
 var catList = new UI.Menu({
   sections: [{
@@ -229,6 +237,12 @@ function setLatLong(pos){
 //this'll be executed with the parameter pos, an object given by the geoloc api
 
 
+
+
+
+
+
+
 function locationError(err) {
   console.log('location error (' + err.code + '): ' + err.message);
 }//handles errors 
@@ -237,6 +251,22 @@ function locationError(err) {
 
 console.log("got before selection candidate");//CAT HANDLER debug thing
 
+
+function setDestination(destination){
+  console.log("Setting Destination");
+  var tempDest = JSON.parse(Settings.data('destination'));
+  console.log("Parsed destiantions to get "+JSON.stringify(tempDest));
+  tempDest = destination;
+  console.log("Destination set");
+  Settings.data('favorites',JSON.stringify(tempDest));
+  var successDest = new UI.Card({
+    title:"Success",
+    subtitle:"Destination set",
+    body:"You have successfully set the destination to " + tempDest.name
+  });
+  successDest.show();
+  
+}
 
 function addToFavorites(x,y){
   console.log("Adding to favorites, "+x);
@@ -394,7 +424,7 @@ function getReviews(x,placeTitle,placeSubtitle){
 				]
 			});
 		reviewsMenu.show();
-		reviewsMenu.on('select', function (event) {
+			reviewsMenu.on('select', function (event) {
 			var review = reviewData[reviewData.length -1- event.itemIndex];
 			console.log(review);
 			var subtitle = processedReviews[processedReviews.length -2 - event.itemIndex].subtitle;
@@ -518,8 +548,8 @@ resultsJson.on('select', function(event) {
   //
   else{
   resultHandler[0].title = "Favorite";  
-  resultHandler.unshift({title:"Directions"});
-  resultHandler.unshift({title:"Reviews"});
+//  resultHandler.unshift({title:"Directions"});
+ // resultHandler.unshift({title:"Reviews"});
   resultHandler.unshift({title:"Information"});
   var placeTitle=locList[event.itemIndex].title;
   var placeSubtitle=locList[event.itemIndex].subtitle;
@@ -537,7 +567,7 @@ resultsJson.on('select', function(event) {
     if(resultHandler[event.itemIndex].title=="Directions")
     {
       console.log("Directing");
-      var directionUrl = "https://maps.googleapis.com/maps/api/directions/json?key=AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8";
+      var directionUrl = "http://maps.googleapis.com/maps/api/directions/json?key=AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8";
       directionUrl+="&origin="+lat+","+long+"&destination=\""+placeSubtitle+"\"";
       console.log(directionUrl);
       ajax(
@@ -577,7 +607,7 @@ dir=dir.replace(/<(?:.|\s)*?>/g, "");
           });
         },
         function(error){
-          console.log(error);
+					console.log("Ajax"+error);
         }
       );
     }
@@ -590,6 +620,14 @@ dir=dir.replace(/<(?:.|\s)*?>/g, "");
       getRating(place,placeTitle,placeSubtitle);
     
     }
+    
+    if(resultHandler[event.itemIndex].title=="Go!"){
+      
+      //ideas
+      var destination = {name:placeTitle,loc:placeSubtitle};
+      setDestination(destination);
+      
+    }    
     
     if(resultHandler[event.itemIndex].title=="Favorite"){
       console.log("Favoriting location "+ placeTitle);
@@ -632,11 +670,12 @@ dir=dir.replace(/<(?:.|\s)*?>/g, "");
       console.log("AJAX Failed because of error: " + error);
     });
   }*/
-    if(resultHandler[event.itemIndex].title=="Reviews"){
+  /*  if(resultHandler[event.itemIndex].title=="Reviews"){
       console.log("Getting Reviews");
+					resultInfo.hide();
       getReviews(place,placeTitle,placeSubtitle);
     
-    }
+    }*/
   });
   
   }
