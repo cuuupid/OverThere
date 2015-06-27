@@ -17,7 +17,7 @@ var destination;
 // these are the require statements that let us use these
 
 /* THIS IS FOR US TO RESET FAVORITES */
-//Settings.data('favorites',null);
+//Settings.data('destination',{name:"Home",location:"Home"});
 var lat = 0; //latitude
 var long = 0;  //longitude
 
@@ -67,7 +67,7 @@ var categories = [
     title:"Favorites"
   },
   {
-    title:"Find Friends",
+    title:"Destination",
   },
   {
     title: "ATM",
@@ -254,18 +254,15 @@ console.log("got before selection candidate");//CAT HANDLER debug thing
 
 function setDestination(destination){
   console.log("Setting Destination");
-  var tempDest = JSON.parse(Settings.data('destination'));
-  console.log("Parsed destiantions to get "+JSON.stringify(tempDest));
-  tempDest = destination;
-  console.log("Destination set");
-  Settings.data('favorites',JSON.stringify(tempDest));
+  var tempDest = destination;
+  Settings.data('destination',JSON.stringify(tempDest));
   var successDest = new UI.Card({
     title:"Success",
     subtitle:"Destination set",
     body:"You have successfully set the destination to " + tempDest.name
   });
+  console.log(Settings.data('destination'));
   successDest.show();
-  
 }
 
 function addToFavorites(x,y){
@@ -469,6 +466,18 @@ catList.on('select', function(event) { //middle button press on an item, take ev
       noFavorites.show();
     }
   }
+  else if(categories[event.itemIndex].title=="Destination"){
+     if(Settings.data('favorites')===null || Settings.data('favorites')===undefined || Settings.data('favorites')=="None"){
+       Settings.data('destination',{name:"Home",location:"Home"});
+     }
+    else {
+      var destCard = new UI.Card({
+        title:JSON.parse(Settings.data('destination')).name,
+        subtitle:JSON.parse(Settings.data('destination')).location
+      });
+      destCard.show();
+    }
+  }
   else{
      cat=categories[event.itemIndex].subtitle;
   console.log(cat);
@@ -551,6 +560,7 @@ resultsJson.on('select', function(event) {
 //  resultHandler.unshift({title:"Directions"});
  // resultHandler.unshift({title:"Reviews"});
   resultHandler.unshift({title:"Information"});
+    resultHandler.unshift({title:"Go!"});
   var placeTitle=locList[event.itemIndex].title;
   var placeSubtitle=locList[event.itemIndex].subtitle;
     var place = locList[event.itemIndex].value;
@@ -624,7 +634,7 @@ dir=dir.replace(/<(?:.|\s)*?>/g, "");
     if(resultHandler[event.itemIndex].title=="Go!"){
       
       //ideas
-      var destination = {name:placeTitle,loc:placeSubtitle};
+      var destination = {name:placeTitle,location:placeSubtitle};
       setDestination(destination);
       
     }    
