@@ -707,4 +707,13 @@ dir=dir.replace(/<(?:.|\s)*?>/g, "");
 //working on it (y)  
   
 console.log("almost to the end"); //more debug shit for async timing 
+  
+  
+  
 }
+
+
+Accel.on('tap', function(e) {
+  console.log('Tap event on axis: ' + e.axis + ' and direction: ' + e.direction);
+//  if()
+});
