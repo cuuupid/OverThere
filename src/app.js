@@ -9,8 +9,6 @@ var Settings = require("settings");
 var Accel = require("ui/accel");
 Accel.init();
 
-
-
 var destination;
 
 //var uber = require("uber");
@@ -204,6 +202,20 @@ function addToUrl(x){
 //usage: addToUrl("paramName=paramValue");
 //it automates the && which is great
 
+function checkLatLong(pos){
+  var templat = pos.coords.latitude;
+  console.log('Lat:' + pos.coords.latitude);
+  var templong = pos.coords.longitude; 
+  if(Math.abs(destination.lat-templat)<(.00009) && Math.abs(destination.long-templong)<(.00009)){
+    var successCard = new UI.Card({title:"You're here!"}); successCard.show();
+  }
+  else {
+    var failureCard = new UI.Card({title:"You're not here yet, false alarm!"}); failureCard.show();
+  }
+  //handle error if it failed
+} 
+
+
 var errorPage = new UI.Card(
 {
   title: "Error" + errorHandler,
@@ -255,13 +267,13 @@ console.log("got before selection candidate");//CAT HANDLER debug thing
 function setDestination(destination){
   console.log("Setting Destination");
   var tempDest = destination;
-  Settings.data('destination',JSON.stringify(tempDest));
+  Settings.data('destination',tempDest);
   var successDest = new UI.Card({
     title:"Success",
     subtitle:"Destination set",
     body:"You have successfully set the destination to " + tempDest.name
   });
-  console.log(Settings.data('destination'));
+  console.log(JSON.stringify(Settings.data('destination')));
   successDest.show();
 }
 
@@ -467,16 +479,19 @@ catList.on('select', function(event) { //middle button press on an item, take ev
     }
   }
   else if(categories[event.itemIndex].title=="Destination"){
-     if(Settings.data('favorites')===null || Settings.data('favorites')===undefined || Settings.data('favorites')=="None"){
-       Settings.data('destination',{name:"Home",location:"Home"});
+    console.log("Selected Destination");
+     if(Settings.data('destination')===null || Settings.data('destination')===undefined || Settings.data('destination')=="None"){
+       Settings.data('destination',{name:"Home",location:"Default!"}); console.log("Destination had no previous data.");
      }
-    else {
+    console.log(JSON.stringify(Settings.data('destination')));
+    console.log(Settings.data('destination'));
+    console.log("Parsing worked");
       var destCard = new UI.Card({
-        title:JSON.parse(Settings.data('destination')).name,
-        subtitle:JSON.parse(Settings.data('destination')).location
+        title:Settings.data('destination').name,
+        subtitle:Settings.data('destination').location
       });
       destCard.show();
-    }
+    console.log("Destination was pimped");
   }
   else{
      cat=categories[event.itemIndex].subtitle;
@@ -515,6 +530,7 @@ locList=[];
       locList[j].title=json.results[j].name;
       locList[j].subtitle=json.results[j].vicinity;
       locList[j].value = json.results[j].place_id;
+      locList[j].latLong = {lat:json.results[j].geometry.location.lat, long:json.results[j].geometry.location.lng};
       console.log(locList[j].title + " " + locList[j].subtitle);
       index++;
     }
@@ -564,6 +580,9 @@ resultsJson.on('select', function(event) {
   var placeTitle=locList[event.itemIndex].title;
   var placeSubtitle=locList[event.itemIndex].subtitle;
     var place = locList[event.itemIndex].value;
+    var placeLat = locList[event.itemIndex].latLong.lat;
+    var placeLong = locList[event.itemIndex].latLong.long;
+    console.log(placeLat+" "+placeLong);
     console.log("THE PLACE ID IS "+place);
   var resultInfo = new UI.Menu({
       sections: [{
@@ -634,7 +653,7 @@ dir=dir.replace(/<(?:.|\s)*?>/g, "");
     if(resultHandler[event.itemIndex].title=="Go!"){
       
       //ideas
-      var destination = {name:placeTitle,location:placeSubtitle};
+      var destination = {name:placeTitle,location:placeSubtitle,lat:placeLat,long:placeLong};
       setDestination(destination);
       
     }    
@@ -712,8 +731,7 @@ console.log("almost to the end"); //more debug shit for async timing
   
 }
 
-
-Accel.on('tap', function(e) {
-  console.log('Tap event on axis: ' + e.axis + ' and direction: ' + e.direction);
-//  if()
+accel.on('tap', function(e){
+  destination = Settings.data('destination');
+  navigator.geolocation.getCurrentPosition(checkLatLong, locationError, locationOptions); //async func to get lat/long coords
 });
