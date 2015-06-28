@@ -30,9 +30,8 @@
                 "type": "font"
             },
             {
-                "file": "images/overtherelogo.png",
-                "menuIcon": true,
-                "name": "IMAGES_OVERTHERELOGO_PNG",
+                "file": "images/logo.png",
+                "name": "IMAGES_LOGO_PNG",
                 "type": "png"
             },
             {
@@ -41,8 +40,9 @@
                 "type": "png"
             },
             {
-                "file": "images/logo.png",
-                "name": "IMAGES_LOGO_PNG",
+                "file": "images/overtherelogo.png",
+                "menuIcon": true,
+                "name": "IMAGES_OVERTHERELOGO_PNG",
                 "type": "png"
             }
         ]

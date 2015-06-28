@@ -11,7 +11,7 @@ var Vibe = require('ui/vibe');
 Accel.init();
 
 var destination;
-
+var overhereip="192.168.0.1";
 //var uber = require("uber");
 // these are the require statements that let us use these
 
@@ -61,6 +61,9 @@ var categories = [
   {
     title:"Reset",
     subtitle:"If the app has stopped working"
+  },
+  {
+    title:"OverHere"
   },
   {
     title:"Favorites"
@@ -296,6 +299,20 @@ function addToFavorites(x,y){
 
 
 
+function setIP(){
+  var one=[{title:"9",value:9}]; var two=[{title:"99",value:99}]; var third; var fourth;
+  for(var i = 8; i>=0; i--)
+    one.unshift({title:""+i,value:i});
+  for(var j = 98; j>=0; j--){
+    two.unshift({title:""+j,value:j}); console.log(j);if(j==-1)break;}
+  console.log(one+two);
+  var menuOne = new UI.Menu({sections:[{title:"192.168.x",items:one}]});
+  menuOne.show();
+  menuOne.on('select',function(e){third=one[e.itemIndex].value;  var menuTwo = new UI.Menu({sections:[{title:"192.168."+third+".x",items:two}]}); menuTwo.show();   menuTwo.on('select',function(e){fourth=two[e.itemIndex].value;console.log(fourth); overhereip="http://192.168."+third+"."+fourth; console.log(overhereip); menuOne.hide(); menuTwo.hide();});
+  });
+}
+
+
 
 function makeFavorites(){
       var favoritesMenu = new UI.Menu({
@@ -325,23 +342,42 @@ function makeFavorites(){
 
 
 function getJSON(url){
+  console.log("BEGINNING REQUESTT");
   ajax(
   {
     url:url,
     type: 'json'
   },
     function(data){
-      console.log(data.information);
-      var mycard =new UI.Card({title:data.information});mycard.show();
+         var mycard =new UI.Card({body:data,scrollable:true});mycard.show();
+  
+//      console.log(data.information);
+  //    console.log("SUCCESSFULY CONTACTED SERVURS");
+    //  var dataList = [];
+      //for(var i = data.menu.length-1; i>=0; i--) dataList.unshift(data.menu[i].title);
+  //    var vendorMenu = new UI.Menu({
+    //    sections:[
+      //    {
+        //    title:data.name,
+          //  items:dataList
+ //         }
+   //     ]
+     // });
+//      vendorMenu.show();
+  //    vendorMenu.on('select',function(e){
+    //    var info = data.menu[e.itemIndex].information;
+      //  (new UI.Card({title:dataList[e.itemIndex],body:info})).show();
+     // });
+//      var mycard =new UI.Card({body:data.information,scrollable:true});mycard.show();
     },
-    function(error){
-      console.log("there was an error, "+error);
-      var failure = new UI.Card({title:error}); failure.show();
-  }
+    function(data){
+         var mycard =new UI.Card({body:data,scrollable:true});mycard.show();
+  
+    }
   );
 }
 
-getJSON("192.168.2.11");
+//getJSON("http://192.168.2.11");
 
 function getRating(x,placeTitle,placeSubtitle){
   var detailsUrl = "https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8&placeid=";
@@ -502,6 +538,15 @@ catList.on('select', function(event) { //middle button press on an item, take ev
       });
       noFavorites.show();
     }
+  }
+  else if(categories[event.itemIndex].title=="OverHere"){
+    console.log("OVERHERE SELECTION"); 
+    var overhereItems=[{title:"Set IP"},{title:"Get Information"}];
+    var menu = new UI.Menu({sections:[{title:"OverHere",items:overhereItems}]}); menu.show();
+    menu.on('select',function(e){
+      if(overhereItems[e.itemIndex].title=="Set IP") setIP();
+      else getJSON(overhereip);
+    });
   }
   else if(categories[event.itemIndex].title=="Destination"){
     console.log("Selected Destination");
@@ -781,4 +826,5 @@ Accel.on('tap', function(e){
   Vibe.vibrate('long');
   destination = Settings.data('destination');
   navigator.geolocation.getCurrentPosition(checkLatLong, locationError, locationOptions); //async func to get lat/long coords
+//  getJSON("http://192.168.2.11");
 });
