@@ -7,6 +7,7 @@ var UI = require('ui'); //sets up UI for usage
 var ajax = require("ajax"); //ajax for communication
 var Settings = require("settings");
 var Accel = require("ui/accel");
+var Vibe = require('ui/vibe');
 Accel.init();
 
 var destination;
@@ -65,7 +66,7 @@ var categories = [
     title:"Favorites"
   },
   {
-    title:"Destination",
+    title:"Destination"
   },
   {
     title: "ATM",
@@ -206,7 +207,7 @@ function checkLatLong(pos){
   var templat = pos.coords.latitude;
   console.log('Lat:' + pos.coords.latitude);
   var templong = pos.coords.longitude; 
-  if(Math.abs(destination.lat-templat)<(.00009) && Math.abs(destination.long-templong)<(.00009)){
+  if(Math.abs(destination.lat-templat)<(0.00009) && Math.abs(destination.long-templong)<(0.00009)){
     var successCard = new UI.Card({title:"You're here!"}); successCard.show();
   }
   else {
@@ -294,6 +295,8 @@ function addToFavorites(x,y){
 }
 
 
+
+
 function makeFavorites(){
       var favoritesMenu = new UI.Menu({
   sections:[{
@@ -317,6 +320,28 @@ function makeFavorites(){
       descriptCard.show();}
   });
 }
+
+
+
+
+function getJSON(url){
+  ajax(
+  {
+    url:url,
+    type: 'json'
+  },
+    function(data){
+      console.log(data.information);
+      var mycard =new UI.Card({title:data.information});mycard.show();
+    },
+    function(error){
+      console.log("there was an error, "+error);
+      var failure = new UI.Card({title:error}); failure.show();
+  }
+  );
+}
+
+getJSON("192.168.2.11");
 
 function getRating(x,placeTitle,placeSubtitle){
   var detailsUrl = "https://maps.googleapis.com/maps/api/place/details/json?key=AIzaSyBlCgWyM7rBfliWUQlXz8odY3KfmqYPUy8&placeid=";
@@ -490,8 +515,29 @@ catList.on('select', function(event) { //middle button press on an item, take ev
         title:Settings.data('destination').name,
         subtitle:Settings.data('destination').location
       });
-      destCard.show();
+    var checkInCard = new UI.Card({title:"Check In",body:"To check in, flick your wrist!"});
+//    var destMenuList = [{title:Settings.data}]
+    var destMenu = new UI.Menu({
+      sections:[{
+        items:[{title:Settings.data('destination').name},{title:"Clear"},{title:"Check In"}]
+      }]
+    });
+    destMenu.show();
+    destMenu.on('select',function(x){
+      console.log("Clicked "+x.itemIndex);
+      switch(x.itemIndex){
+        case 0: destCard.show(); console.log("Destination clicked"); break;
+        case 1: console.log("Resetting dest");Settings.data('destination',{name:"Home",location:"Home"}); destMenu.hide(); break;
+        case 2: console.log("Checking In"); checkInCard.show(); break;
+      }
+    });
     console.log("Destination was pimped");
+  }
+  else if(categories[event.itemIndex].title=="Check In"){
+      Vibe.vibrate('long');
+  destination = Settings.data('destination');
+  navigator.geolocation.getCurrentPosition(checkLatLong, locationError, locationOptions); //async func to get lat/long coords
+
   }
   else{
      cat=categories[event.itemIndex].subtitle;
@@ -731,7 +777,8 @@ console.log("almost to the end"); //more debug shit for async timing
   
 }
 
-accel.on('tap', function(e){
+Accel.on('tap', function(e){
+  Vibe.vibrate('long');
   destination = Settings.data('destination');
   navigator.geolocation.getCurrentPosition(checkLatLong, locationError, locationOptions); //async func to get lat/long coords
 });
